@@ -1,1 +1,3 @@
 discord
+Flask
+PyNaCl
