@@ -16,7 +16,7 @@ jobs:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           # Corrected repository name based on your screenshot
-          REPO_NAME="natedose/xderr"
+          REPO_NAME="naturedose/xderr"
           
           echo "Searching for active Codespace in $REPO_NAME..."
           # This command automatically finds the name of your codespace in this repo
