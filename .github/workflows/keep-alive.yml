@@ -7,17 +7,14 @@ on:
   # Allows you to run it manually right now to test it
   workflow_dispatch:
 
-permissions:
-  contents: read
-  codespaces: write
-
 jobs:
   ping-codespace:
     runs-on: ubuntu-latest
     steps:
       - name: Send Keep-Alive Ping
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # We will use a Personal Access Token stored in secrets
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           # Using your repository name from the screenshot
           REPO_NAME="naturedose/xder"
