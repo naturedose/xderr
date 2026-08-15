@@ -13,22 +13,25 @@ jobs:
     steps:
       - name: Send Keep-Alive Ping
         env:
+          # We will use a Personal Access Token stored in secrets
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          echo "Fetching all active Codespaces for your account..."
+          # Using your repository name from the screenshot
+          REPO_NAME="naturedose/xderr"
           
-          # This fetches ALL your codespaces globally and grabs the first one it finds
-          CODESPACE_NAME=$(gh codespace list --json name -q '.[0].name')
+          echo "Searching for active Codespace in $REPO_NAME..."
+          # This command automatically finds the name of your codespace in this repo
+          CODESPACE_NAME=$(gh codespace list --repo "$REPO_NAME" --json name -q '.[0].name')
           
           if [ -z "$CODESPACE_NAME" ]; then
-            echo "⚠️ No Codespace found. Make sure you have an active Codespace running!"
+            echo "⚠️ No Codespace found for $REPO_NAME. Make sure it is running!"
             exit 1
           fi
           
-          echo "✅ Found Active Codespace: $CODESPACE_NAME"
-          echo "Sending keep-alive ping..."
+          echo "✅ Found Codespace: $CODESPACE_NAME"
+          echo "Sending ping..."
           
-          # Sends a harmless command to keep it awake
+          # Sends a harmless command to keep it alive
           gh codespace ssh -c "$CODESPACE_NAME" -- "echo 'Keep-alive signal received at $(date)' && uptime"
           
           echo "Ping successful. Your Codespace will stay awake."
