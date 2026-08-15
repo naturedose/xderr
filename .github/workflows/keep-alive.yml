@@ -1,9 +1,9 @@
-name: Keep Codespace Alive
+name: Keep Codespace Alive (Unlimited 2-Min Pings)
 
 on:
   schedule:
-    # Runs every 2 hours to prevent the 4-hour max idle timeout
-    - cron: "0 */2 * * *"
+    # Runs every 6 hours to start a fresh 6-hour loop (GitHub's max job time is 6 hours)
+    - cron: "0 */6 * * *"
   # Allows you to run it manually right now to test it
   workflow_dispatch:
 
@@ -11,16 +11,14 @@ jobs:
   ping-codespace:
     runs-on: ubuntu-latest
     steps:
-      - name: Send Keep-Alive Ping
+      - name: Send Keep-Alive Ping (Loop)
         env:
-          # We will use a Personal Access Token stored in secrets
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          # Using your repository name from the screenshot
+          # Using your repository name
           REPO_NAME="naturedose/xderr"
           
           echo "Searching for active Codespace in $REPO_NAME..."
-          # This command automatically finds the name of your codespace in this repo
           CODESPACE_NAME=$(gh codespace list --repo "$REPO_NAME" --json name -q '.[0].name')
           
           if [ -z "$CODESPACE_NAME" ]; then
@@ -29,9 +27,15 @@ jobs:
           fi
           
           echo "✅ Found Codespace: $CODESPACE_NAME"
-          echo "Sending ping..."
+          echo "Starting infinite loop. Pinging every 120 seconds..."
           
-          # Sends a harmless command to keep it alive
-          gh codespace ssh -c "$CODESPACE_NAME" -- "echo 'Keep-alive signal received at $(date)' && uptime"
-          
-          echo "Ping successful. Your Codespace will stay awake."
+          # This loop will run continuously until the 6-hour GitHub Actions limit forces it to stop.
+          # Then, the cron schedule above will automatically start a new one!
+          while true; do
+            echo "Pinging at $(date)..."
+            # We use '|| true' so that if the SSH command fails once, the loop doesn't break entirely
+            gh codespace ssh -c "$CODESPACE_NAME" -- "echo 'Keep-alive signal received at $(date)' && uptime" || echo "Ping failed, will retry in 2 mins..."
+            
+            echo "Sleeping for 120 seconds..."
+            sleep 120
+          done
