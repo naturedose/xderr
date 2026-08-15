@@ -13,11 +13,10 @@ jobs:
     steps:
       - name: Send Keep-Alive Ping
         env:
-          # We will use a Personal Access Token stored in secrets
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          # Using your repository name from the screenshot
-          REPO_NAME="naturedose/xder"
+          # Corrected repository name based on your screenshot
+          REPO_NAME="natedose/xderr"
           
           echo "Searching for active Codespace in $REPO_NAME..."
           # This command automatically finds the name of your codespace in this repo
