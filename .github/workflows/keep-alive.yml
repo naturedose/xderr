@@ -15,22 +15,20 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          # Corrected repository name based on your screenshot
-          REPO_NAME="naturedose/xderr"
+          echo "Fetching all active Codespaces for your account..."
           
-          echo "Searching for active Codespace in $REPO_NAME..."
-          # This command automatically finds the name of your codespace in this repo
-          CODESPACE_NAME=$(gh codespace list --repo "$REPO_NAME" --json name -q '.[0].name')
+          # This fetches ALL your codespaces globally and grabs the first one it finds
+          CODESPACE_NAME=$(gh codespace list --json name -q '.[0].name')
           
           if [ -z "$CODESPACE_NAME" ]; then
-            echo "⚠️ No Codespace found for $REPO_NAME. Make sure it is running!"
+            echo "⚠️ No Codespace found. Make sure you have an active Codespace running!"
             exit 1
           fi
           
-          echo "✅ Found Codespace: $CODESPACE_NAME"
-          echo "Sending ping..."
+          echo "✅ Found Active Codespace: $CODESPACE_NAME"
+          echo "Sending keep-alive ping..."
           
-          # Sends a harmless command to keep it alive
+          # Sends a harmless command to keep it awake
           gh codespace ssh -c "$CODESPACE_NAME" -- "echo 'Keep-alive signal received at $(date)' && uptime"
           
           echo "Ping successful. Your Codespace will stay awake."
